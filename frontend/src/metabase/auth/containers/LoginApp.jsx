@@ -24,7 +24,7 @@ export default class LoginApp extends Component {
 
     return (
       <AuthLayout>
-        <h2 className="text-centered mb3">{t`Sign in to Metabase`}</h2>
+        <h2 className="text-centered mb3">{t`Sign in to ITB360 Analytics Center`}</h2>
         {visibleProviders.length === 1 && visibleProviders[0].Panel ? (
           this.renderPanel(visibleProviders[0])
         ) : (

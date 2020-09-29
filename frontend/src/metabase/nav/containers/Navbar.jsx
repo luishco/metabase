@@ -62,8 +62,8 @@ const AdminNavItem = ({ name, path, currentPath }) => (
   </li>
 );
 
-const DefaultSearchColor = lighten(color("nav"), 0.07);
-const ActiveSearchColor = lighten(color("nav"), 0.1);
+const DefaultSearchColor = color("searchBar");
+const ActiveSearchColor = lighten(color("searchBar"), 0.4);
 
 const NavHover = {
   backgroundColor: darken(color("nav")),

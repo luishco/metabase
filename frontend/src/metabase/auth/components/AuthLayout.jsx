@@ -4,7 +4,7 @@ import { Flex } from "grid-styled";
 import Card from "metabase/components/Card";
 
 import AuthScene from "../components/AuthScene";
-import LogoIcon from "metabase/components/LogoIcon";
+import LogoAuth from "metabase/components/LogoAuth";
 
 const AuthLayout = ({ children }) => (
   <Flex
@@ -15,7 +15,7 @@ const AuthLayout = ({ children }) => (
     className="overflow-hidden relative"
   >
     <Flex mt={-4} flexDirection="column">
-      <LogoIcon height={65} />
+      <LogoAuth height={65} />
       <Card p={3} mt={3} className="relative z2" w={420}>
         {children}
       </Card>
