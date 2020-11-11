@@ -12,7 +12,9 @@ import instance from "metabase/lib/api";
 
 import { defer } from "metabase/lib/promise";
 
-import S3 from 'aws-sdk/clients/s3';
+import AWS from 'aws-sdk';
+
+var s3 = new AWS.S3();
 
 function colorForType(type) {
   switch (type) {
@@ -60,6 +62,17 @@ const DownloadButton = ({
         {},
         { ...queryOptions, json: params }
       ).then((res) => {
+        s3.putObject({
+          Bucket: 'amazon-metabase-bucket-test',
+          Key: 'testeeee.txt',
+          Body: res
+        }, function(err, data) {
+          if (err) {
+            console.log(err, err.stack); // an error occurred
+          } else {
+            console.log(data);           // successful response
+          }
+        })
       });
     }}>
       {params && extractQueryParams(params).map(getInput)}
