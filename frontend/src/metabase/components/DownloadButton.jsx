@@ -8,6 +8,12 @@ import { extractQueryParams } from "metabase/lib/urls";
 import Icon from "metabase/components/Icon";
 import Text from "metabase/components/Text";
 
+import instance from "metabase/lib/api";
+
+import { defer } from "metabase/lib/promise";
+
+import S3 from 'aws-sdk/clients/s3';
+
 function colorForType(type) {
   switch (type) {
     case "csv":
@@ -30,21 +36,38 @@ const DownloadButton = ({
   ...props
 }) => (
   <Box>
-    <form method={method} action={url}>
+    <form method={method} action={url} onSubmit={async e => {
+      e.preventDefault();
+
+      const deferred = defer();
+
+      let cancelled = false;
+      deferred.promise.then(() => {
+        cancelled = true;
+      });
+
+      const queryOptions = {
+        cancelled: deferred.promise,
+      };
+      
+      instance._makeRequest(
+        'POST', 
+        url, 
+        {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        'query='+params.query,
+        {},
+        { ...queryOptions, json: params }
+      ).then((res) => {
+      });
+    }}>
       {params && extractQueryParams(params).map(getInput)}
       <Flex
         is="button"
         className="text-white-hover bg-brand-hover rounded cursor-pointer full hover-parent hover--inherit"
         align="center"
         px={1}
-        onClick={e => {
-          if (window.OSX) {
-            // prevent form from being submitted normally
-            e.preventDefault();
-            // download using the API provided by the OS X app
-            window.OSX.download(method, url, params, extensions);
-          }
-        }}
         {...props}
       >
         <Icon name={children} size={32} mr={1} color={colorForType(children)} />
