@@ -14,7 +14,7 @@ import { defer } from "metabase/lib/promise";
 
 import AWS from 'aws-sdk';
 
-var s3 = new AWS.S3();
+let s3 = new AWS.S3();
 
 function colorForType(type) {
   switch (type) {
