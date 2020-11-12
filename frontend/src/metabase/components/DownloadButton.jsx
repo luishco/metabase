@@ -41,6 +41,11 @@ const DownloadButton = ({
     <form method={method} action={url} onSubmit={async e => {
       e.preventDefault();
 
+      const extension = url.split('/')[2]
+
+      let date = new Date();
+      const fileName = date.toJSON() + '.' + extension;
+
       const deferred = defer();
 
       let cancelled = false;
@@ -64,7 +69,7 @@ const DownloadButton = ({
       ).then((res) => {
         s3.putObject({
           Bucket: 'amazon-metabase-bucket-test',
-          Key: 'testeeee.txt',
+          Key: fileName,
           Body: res
         }, function(err, data) {
           if (err) {
