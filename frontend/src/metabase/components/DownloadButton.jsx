@@ -13,10 +13,7 @@ import instance from "metabase/lib/api";
 import { defer } from "metabase/lib/promise";
 
 import AWS from 'aws-sdk';
-AWS.config.update({
-  "accessKeyId": "AKIAQOYT3SC5TQKUVIWB",
-  "secretAccessKey": "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"
-});
+
 let s3 = new AWS.S3();
 
 function colorForType(type) {
