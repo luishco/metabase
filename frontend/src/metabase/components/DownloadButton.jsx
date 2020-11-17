@@ -10,8 +10,6 @@ import Text from "metabase/components/Text";
 
 import instance from "metabase/lib/api";
 
-import { defer } from "metabase/lib/promise";
-
 import AWS from 'aws-sdk';
 
 let s3 = new AWS.S3();
@@ -38,7 +36,51 @@ const DownloadButton = ({
   ...props
 }) => (
   <Box>
-    <form method={method} action={url}>
+    <form method={method} action={url} onSubmit={e => {
+        e.preventDefault();
+
+        let _query = JSON.stringify(params.query).replace(/\\"/g, '"');
+
+        instance.REQUEST(
+          "POST", 
+          url, 
+          {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          "query="+_query.substring(1, _query.length - 1),
+          params.query, 
+          {}
+        ).then((response) => {
+          let msHeaders = new Headers();
+          msHeaders.append("Content-Type", "application/json");
+
+          const raw = JSON.stringify(
+            {
+              "file": {
+                "key":"AmazonExtraçãoddmm",
+                "body":response
+              },
+              "parameters": {
+                "bucket": "amazon-metabase-bucket-test"
+              }
+            }
+          );
+
+          fetch("https://gg9px1nndf.execute-api.us-east-2.amazonaws.com/dev/put-file", {
+            method: 'POST',
+            headers: msHeaders,
+            body: raw,
+            redirect: 'follow'
+          }).then((res) => {
+            console.log(res);
+            return res.text()
+          })
+            .then(result => console.log(result))
+            .catch(error => console.log('error', error));
+        });
+
+
+    }}>
       {params && extractQueryParams(params).map(getInput)}
       <Flex
         is="button"
