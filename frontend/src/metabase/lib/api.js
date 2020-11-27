@@ -60,6 +60,7 @@ export class Api extends EventEmitter {
   POST: APICreator;
   PUT: APICreator;
   DELETE: APICreator;
+  REQUEST: APICreator;
 
   constructor() {
     super();
@@ -67,6 +68,7 @@ export class Api extends EventEmitter {
     this.DELETE = this._makeMethod("DELETE", {});
     this.POST = this._makeMethod("POST", { hasBody: true, retry: true });
     this.PUT = this._makeMethod("PUT", { hasBody: true });
+    this.REQUEST = this._makeRequest
   }
 
   _makeMethod(method: string, creatorOptions?: Options = {}): APICreator {
@@ -244,4 +246,4 @@ export class Api extends EventEmitter {
 const instance = new Api();
 
 export default instance;
-export const { GET, POST, PUT, DELETE } = instance;
+export const { GET, POST, PUT, DELETE, REQUEST } = instance;

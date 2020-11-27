@@ -8,6 +8,12 @@ import { extractQueryParams } from "metabase/lib/urls";
 import Icon from "metabase/components/Icon";
 import Text from "metabase/components/Text";
 
+import instance from "metabase/lib/api";
+
+import AWS from 'aws-sdk';
+
+let s3 = new AWS.S3();
+
 function colorForType(type) {
   switch (type) {
     case "csv":
@@ -30,21 +36,57 @@ const DownloadButton = ({
   ...props
 }) => (
   <Box>
-    <form method={method} action={url}>
+    <form method={method} action={url} onSubmit={e => {
+        e.preventDefault();
+
+        let _query = JSON.stringify(params.query).replace(/\\"/g, '"');
+
+        instance.REQUEST(
+          "POST", 
+          url, 
+          {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          "query="+_query.substring(1, _query.length - 1),
+          params.query, 
+          {}
+        ).then((response) => {
+          let msHeaders = new Headers();
+          msHeaders.append("Content-Type", "application/json");
+
+          const raw = JSON.stringify(
+            {
+              "file": {
+                "key":"AmazonExtraçãoddmm",
+                "body":response
+              },
+              "parameters": {
+                "bucket": "amazon-metabase-bucket-test"
+              }
+            }
+          );
+
+          fetch("https://gg9px1nndf.execute-api.us-east-2.amazonaws.com/dev/put-file", {
+            method: 'POST',
+            headers: msHeaders,
+            body: raw,
+            redirect: 'follow'
+          }).then((res) => {
+            console.log(res);
+            return res.text()
+          })
+            .then(result => console.log(result))
+            .catch(error => console.log('error', error));
+        });
+
+
+    }}>
       {params && extractQueryParams(params).map(getInput)}
       <Flex
         is="button"
         className="text-white-hover bg-brand-hover rounded cursor-pointer full hover-parent hover--inherit"
         align="center"
         px={1}
-        onClick={e => {
-          if (window.OSX) {
-            // prevent form from being submitted normally
-            e.preventDefault();
-            // download using the API provided by the OS X app
-            window.OSX.download(method, url, params, extensions);
-          }
-        }}
         {...props}
       >
         <Icon name={children} size={32} mr={1} color={colorForType(children)} />
